@@ -1,6 +1,7 @@
 import React from "react";
 import { useFonts } from "expo-font";
 import AppLoading from "expo-app-loading";
+import { StatusBar } from "react-native";
 import { ThemeProvider } from "styled-components/native";
 import { Inter_400Regular, Inter_500Medium } from "@expo-google-fonts/inter";
 import {
@@ -12,7 +13,7 @@ import {
 import theme from "./src/styles/theme";
 
 import { Home } from "./src/screens/Home";
-import { StatusBar } from "react-native";
+import { CarDetails } from "./src/screens/CarDetails";
 
 export default function App() {
   const [isFontsLoaded] = useFonts({
@@ -35,7 +36,8 @@ export default function App() {
         barStyle={"light-content"}
         backgroundColor={"transparent"}
       />
-      <Home />
+      {/* <Home /> */}
+      <CarDetails />
     </ThemeProvider>
   );
 }
