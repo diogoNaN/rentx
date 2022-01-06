@@ -12,8 +12,7 @@ import {
 
 import theme from "./src/styles/theme";
 
-import { Home } from "./src/screens/Home";
-import { CarDetails } from "./src/screens/CarDetails";
+import { Routes } from "./src/routes";
 
 export default function App() {
   const [isFontsLoaded] = useFonts({
@@ -36,8 +35,7 @@ export default function App() {
         barStyle={"light-content"}
         backgroundColor={"transparent"}
       />
-      {/* <Home /> */}
-      <CarDetails />
+      <Routes />
     </ThemeProvider>
   );
 }

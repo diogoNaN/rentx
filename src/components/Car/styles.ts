@@ -1,7 +1,10 @@
-import { RFValue } from "react-native-responsive-fontsize";
 import styled from "styled-components/native";
+import { RFValue } from "react-native-responsive-fontsize";
+import { TouchableOpacity, TouchableOpacityProps } from "react-native";
 
-export const Container = styled.View`
+export const Container = styled(TouchableOpacity).attrs<TouchableOpacityProps>({
+  activeOpacity: 0.7,
+})<TouchableOpacityProps>`
   width: 100%;
   height: 126px;
 

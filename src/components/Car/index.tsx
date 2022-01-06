@@ -1,4 +1,5 @@
 import React from "react";
+import { TouchableOpacityProps } from "react-native";
 
 import GasolineSvg from "../../assets/gasoline.svg";
 
@@ -25,15 +26,15 @@ type Car = {
   thumbnail: string;
 };
 
-type CardCarProps = {
+type CarProps = TouchableOpacityProps & {
   data: Car;
 };
 
-export const CardCar: React.FC<CardCarProps> = (props) => {
-  const { data } = props;
+export const Car: React.FC<CarProps> = (props) => {
+  const { data, ...rest } = props;
 
   return (
-    <Container>
+    <Container {...rest}>
       <Details>
         <Brand>{data.brand}</Brand>
         <Name>{data.name}</Name>

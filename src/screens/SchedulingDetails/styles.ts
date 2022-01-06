@@ -82,14 +82,78 @@ export const Accessories = styled.View`
   justify-content: space-between;
 `;
 
-export const About = styled.Text`
-  margin-top: 23px;
+export const RentalPeriod = styled.View`
+  width: 100%;
+  margin-top: 40px;
 
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+
+  border-bottom-width: 1px;
+  border-bottom-color: ${({ theme }) => theme.colors.line};
+  padding-bottom: 10px;
+`;
+
+export const CalendarIcon = styled.View`
+  width: 48px;
+  height: 48px;
+  background-color: ${({ theme }) => theme.colors.main};
+
+  align-items: center;
+  justify-content: center;
+`;
+
+export const DateInfo = styled.View`
+  /* width: 30%; */
+`;
+
+export const DateTitle = styled.Text`
+  font-size: ${RFValue(10)}px;
+  font-family: ${({ theme }) => theme.fonts.primary_500};
+  color: ${({ theme }) => theme.colors.text_detail};
+
+  text-transform: uppercase;
+`;
+
+export const DateValue = styled.Text`
   font-size: ${RFValue(15)}px;
-  font-family: ${({ theme }) => theme.fonts.primary_400};
-  color: ${({ theme }) => theme.colors.text};
-  text-align: justify;
-  line-height: ${RFValue(25)}px;
+  font-family: ${({ theme }) => theme.fonts.primary_500};
+  color: ${({ theme }) => theme.colors.title};
+`;
+
+export const RentalPrice = styled.View`
+  width: 100%;
+  margin-top: 16px;
+`;
+
+export const RentalPriceLabel = styled.Text`
+  font-size: ${RFValue(10)}px;
+  font-family: ${({ theme }) => theme.fonts.primary_500};
+  color: ${({ theme }) => theme.colors.text_detail};
+
+  text-transform: uppercase;
+`;
+
+export const RentalPriceDetails = styled.View`
+  width: 100%;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
+`;
+
+export const RentalPriceQuota = styled.Text`
+  font-size: ${RFValue(15)}px;
+  font-family: ${({ theme }) => theme.fonts.primary_500};
+  color: ${({ theme }) => theme.colors.title};
+
+  margin-bottom: 4px;
+`;
+
+export const RentalPriceTotal = styled.Text`
+  font-size: ${RFValue(24)}px;
+  font-family: ${({ theme }) => theme.fonts.secondary_500};
+  color: ${({ theme }) => theme.colors.success};
 `;
 
 export const Footer = styled.View`
