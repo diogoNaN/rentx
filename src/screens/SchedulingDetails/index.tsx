@@ -197,8 +197,9 @@ export const SchedulingDetails: React.FC = () => {
 
       <Footer>
         <Button
-          title={loading ? "Alugando..." : "Alugar agora"}
-          disabled={loading}
+          title={"Alugar agora"}
+          enabled={!loading}
+          loading={loading}
           color={theme.colors.success}
           onPress={handleCreateRental}
         />
