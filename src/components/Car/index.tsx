@@ -1,7 +1,9 @@
 import React from "react";
 import { TouchableOpacityProps } from "react-native";
 
-import GasolineSvg from "../../assets/gasoline.svg";
+import { getAccessoryIcon } from "../../utils/getAccessoryIcon";
+
+import { CarDTO } from "../../dtos/CarDTO";
 
 import {
   Container,
@@ -16,15 +18,7 @@ import {
   CarImage,
 } from "./styles";
 
-type Car = {
-  name: string;
-  brand: string;
-  rent: {
-    period: string;
-    price: number;
-  };
-  thumbnail: string;
-};
+type Car = CarDTO & {};
 
 type CarProps = TouchableOpacityProps & {
   data: Car;
@@ -32,6 +26,8 @@ type CarProps = TouchableOpacityProps & {
 
 export const Car: React.FC<CarProps> = (props) => {
   const { data, ...rest } = props;
+
+  const MotorIcon = getAccessoryIcon(data.fuel_type);
 
   return (
     <Container {...rest}>
@@ -44,7 +40,7 @@ export const Car: React.FC<CarProps> = (props) => {
             <Price>{`R$ ${data.rent.price}`}</Price>
           </Rent>
           <Type>
-            <GasolineSvg />
+            <MotorIcon />
           </Type>
         </About>
       </Details>

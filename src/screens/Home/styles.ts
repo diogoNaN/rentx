@@ -2,16 +2,9 @@ import styled from "styled-components/native";
 import { RFValue } from "react-native-responsive-fontsize";
 import { FlatList, FlatListProps } from "react-native";
 
-export type CarProps = {
-  id: string;
-  name: string;
-  brand: string;
-  rent: {
-    period: string;
-    price: number;
-  };
-  thumbnail: string;
-};
+import { CarDTO } from "../../dtos/CarDTO";
+
+export type CarProps = CarDTO & {};
 
 type CarListProps = FlatListProps<CarProps> & {};
 
@@ -41,11 +34,26 @@ export const TotalCars = styled.Text`
   color: ${({ theme }) => theme.colors.text};
 `;
 
-export const CarList = styled(FlatList as new () => FlatList<CarProps>).attrs<
-  FlatListProps<CarProps>
->({
+export const CarList = styled(FlatList as new () => FlatList<CarProps>).attrs({
   contentContainerStyle: {
     padding: 24,
   },
   showVerticalScrollIndicator: false,
 })<CarListProps>``;
+
+export const MyCarsButton = styled.TouchableOpacity`
+  width: 60px;
+  height: 60px;
+
+  position: absolute;
+
+  right: 22px;
+  bottom: 13px;
+
+  border-radius: 30px;
+
+  align-items: center;
+  justify-content: center;
+
+  background-color: ${({ theme }) => theme.colors.main};
+`;

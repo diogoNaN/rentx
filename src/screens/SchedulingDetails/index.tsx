@@ -1,7 +1,9 @@
-import React, { useCallback } from "react";
-import { StatusBar } from "react-native";
+import React, { useCallback, useMemo, useState } from "react";
+import { Alert, StatusBar } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { RFValue } from "react-native-responsive-fontsize";
+import { format, eachDayOfInterval } from "date-fns";
 
 import {
   Container,
@@ -28,27 +30,89 @@ import {
   RentalPriceTotal,
   Footer,
 } from "./styles";
-
-import SpeedSvg from "../../assets/speed.svg";
-import AccelerationSvg from "../../assets/acceleration.svg";
-import ForceSvg from "../../assets/force.svg";
-import GasolineSvg from "../../assets/gasoline.svg";
-import ExchangeSvg from "../../assets/exchange.svg";
-import PeopleSvg from "../../assets/people.svg";
+import theme from "../../styles/theme";
 
 import { BackButton } from "../../components/BackButton";
 import { ImageSlider } from "../../components/ImageSlider";
 import { Accessory } from "../../components/Accessory";
 import { Button } from "../../components/Button";
-import { RFValue } from "react-native-responsive-fontsize";
-import theme from "../../styles/theme";
+
+import { getAccessoryIcon } from "../../utils/getAccessoryIcon";
+
+import { CarDTO } from "../../dtos/CarDTO";
+import { api } from "../../services/api";
+
+type Params = {
+  car: CarDTO;
+  period: {
+    start: string;
+    end: string;
+  };
+};
 
 export const SchedulingDetails: React.FC = () => {
+  const route = useRoute();
   const { navigate, goBack } = useNavigation();
 
-  const handleCreateRental = useCallback(() => {
-    navigate("SchedulingComplete");
-  }, [navigate]);
+  const [loading, setLoading] = useState(false);
+
+  const { car, period } = route.params as Params;
+
+  const parsedPeriod = useMemo(() => {
+    return {
+      start: new Date(period.start),
+      end: new Date(period.end),
+    };
+  }, [period]);
+
+  const formattedPeriod = useMemo(() => {
+    return {
+      start: format(parsedPeriod.start, "dd/MM/yyyy"),
+      end: format(parsedPeriod.end, "dd/MM/yyyy"),
+    };
+  }, [parsedPeriod]);
+
+  const dates = useMemo(() => {
+    const days = eachDayOfInterval({
+      start: parsedPeriod.start,
+      end: parsedPeriod.end,
+    });
+
+    const daysFormatted = days.map((day) => format(day, "yyyy-MM-dd"));
+
+    return {
+      days,
+      days_formatted: daysFormatted,
+      total: days.length,
+    };
+  }, [parsedPeriod]);
+
+  const handleCreateRental = useCallback(async () => {
+    setLoading(true);
+
+    try {
+      const schedulesByCar = await api.get(`/schedules_bycars/${car.id}`);
+
+      const formData = {
+        id: car.id,
+        unavailable_dates: [
+          ...schedulesByCar.data.unavailable_dates,
+          ...dates.days_formatted.filter(
+            (day) => !schedulesByCar.data.unavailable_dates.includes(day)
+          ),
+        ],
+      };
+
+      await api.put(`/schedules_bycars/${car.id}`, formData);
+
+      navigate("SchedulingComplete");
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Ops", "Não foi possível alugar");
+    } finally {
+      setLoading(false);
+    }
+  }, [navigate, dates]);
 
   return (
     <Container>
@@ -58,35 +122,29 @@ export const SchedulingDetails: React.FC = () => {
       </Header>
 
       <CarImages>
-        <ImageSlider
-          images={[
-            "https://freepngimg.com/thumb/audi/35227-5-audi-rs5-red.png",
-            "https://freepngimg.com/thumb/audi/35227-5-audi-rs5-red.png",
-            "https://freepngimg.com/thumb/audi/35227-5-audi-rs5-red.png",
-            "https://freepngimg.com/thumb/audi/35227-5-audi-rs5-red.png",
-          ]}
-        />
+        <ImageSlider images={car.photos} />
       </CarImages>
 
       <Content>
         <Details>
           <Description>
-            <Brand>Audi</Brand>
-            <Name>Huracan</Name>
+            <Brand>{car.brand}</Brand>
+            <Name>{car.name}</Name>
           </Description>
           <Rent>
-            <Period>Ao dia</Period>
-            <Price>R$ 245</Price>
+            <Period>{car.rent.period}</Period>
+            <Price>R$ {car.rent.price}</Price>
           </Rent>
         </Details>
 
         <Accessories>
-          <Accessory name={"380km/h"} icon={SpeedSvg} />
-          <Accessory name={"3.2s"} icon={AccelerationSvg} />
-          <Accessory name={"800 HP"} icon={ForceSvg} />
-          <Accessory name={"Gasolina"} icon={GasolineSvg} />
-          <Accessory name={"Auto"} icon={ExchangeSvg} />
-          <Accessory name={"2 pessoas"} icon={PeopleSvg} />
+          {car.accessories.map((item) => (
+            <Accessory
+              key={item.name}
+              name={item.name}
+              icon={getAccessoryIcon(item.type)}
+            />
+          ))}
         </Accessories>
 
         <RentalPeriod>
@@ -100,7 +158,7 @@ export const SchedulingDetails: React.FC = () => {
 
           <DateInfo>
             <DateTitle>De</DateTitle>
-            <DateValue>18/06/21</DateValue>
+            <DateValue>{formattedPeriod.start}</DateValue>
           </DateInfo>
 
           <Feather
@@ -111,22 +169,29 @@ export const SchedulingDetails: React.FC = () => {
 
           <DateInfo>
             <DateTitle>Até</DateTitle>
-            <DateValue>20/06/21</DateValue>
+            <DateValue> {formattedPeriod.end}</DateValue>
           </DateInfo>
         </RentalPeriod>
 
         <RentalPrice>
           <RentalPriceLabel>Total</RentalPriceLabel>
           <RentalPriceDetails>
-            <RentalPriceQuota>R$ 580 x3 diárias</RentalPriceQuota>
-            <RentalPriceTotal>R$ 2900</RentalPriceTotal>
+            <RentalPriceQuota>
+              {`R$ ${car.rent.price} x${dates.total} ${
+                dates.total > 1 ? "diárias" : "diária"
+              }`}
+            </RentalPriceQuota>
+            <RentalPriceTotal>{`R$ ${
+              car.rent.price * dates.total
+            }`}</RentalPriceTotal>
           </RentalPriceDetails>
         </RentalPrice>
       </Content>
 
       <Footer>
         <Button
-          title="Alugar agora"
+          title={loading ? "Alugando..." : "Alugar agora"}
+          disabled={loading}
           color={theme.colors.success}
           onPress={handleCreateRental}
         />
