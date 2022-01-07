@@ -41,7 +41,9 @@ export const CarList = styled(FlatList as new () => FlatList<CarProps>).attrs({
   showVerticalScrollIndicator: false,
 })<CarListProps>``;
 
-export const MyCarsButton = styled.TouchableOpacity`
+export const MyCarsButton = styled.TouchableOpacity.attrs({
+  activeOpacity: 0.7,
+})`
   width: 60px;
   height: 60px;
 

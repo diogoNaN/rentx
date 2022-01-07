@@ -50,7 +50,7 @@ export const Home: React.FC = () => {
   );
 
   const handleOpenMyCars = useCallback(() => {
-    // navigate("MyCars");
+    navigate("MyCars");
   }, [navigate]);
 
   const loadCars = useCallback(async () => {

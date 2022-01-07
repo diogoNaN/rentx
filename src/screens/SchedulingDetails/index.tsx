@@ -103,6 +103,13 @@ export const SchedulingDetails: React.FC = () => {
         ],
       };
 
+      await api.post(`/schedules_byuser`, {
+        user_id: 1,
+        car,
+        start_date: parsedPeriod.start.toISOString(),
+        end_date: parsedPeriod.end.toISOString(),
+      });
+
       await api.put(`/schedules_bycars/${car.id}`, formData);
 
       navigate("SchedulingComplete");
@@ -112,7 +119,7 @@ export const SchedulingDetails: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [navigate, dates]);
+  }, [navigate, car, dates, parsedPeriod]);
 
   return (
     <Container>
