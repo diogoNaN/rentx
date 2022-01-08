@@ -17,7 +17,7 @@ export const Splash: React.FC = () => {
   const animation = useSharedValue(0);
   const { navigate } = useNavigation();
 
-  const brandStyle = useAnimatedStyle(() => {
+  const brandAnimatedStyle = useAnimatedStyle(() => {
     return {
       opacity: interpolate(
         animation.value,
@@ -43,7 +43,7 @@ export const Splash: React.FC = () => {
     };
   });
 
-  const logoStyle = useAnimatedStyle(() => {
+  const logoAnimatedStyle = useAnimatedStyle(() => {
     return {
       opacity: interpolate(animation.value, [0, 80, 100], [0, 0, 1]),
     };
@@ -69,11 +69,11 @@ export const Splash: React.FC = () => {
 
   return (
     <Container>
-      <Animated.View style={[brandStyle, { position: "absolute" }]}>
+      <Animated.View style={[brandAnimatedStyle, { position: "absolute" }]}>
         <BrandSvg width={80} height={50} />
       </Animated.View>
 
-      <Animated.View style={[logoStyle, { position: "absolute" }]}>
+      <Animated.View style={[logoAnimatedStyle, { position: "absolute" }]}>
         <LogoSvg width={180} height={20} />
       </Animated.View>
     </Container>

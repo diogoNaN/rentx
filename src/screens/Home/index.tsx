@@ -1,9 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Alert } from "react-native";
+import { Alert, BackHandler } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "styled-components";
+import Animated, {
+  useAnimatedGestureHandler,
+  useAnimatedStyle,
+  useSharedValue,
+} from "react-native-reanimated";
+import { PanGestureHandler } from "react-native-gesture-handler";
 
 import { api } from "../../services/api";
 
@@ -14,23 +20,44 @@ import {
   Container,
   Header,
   HeaderContent,
-  TotalCars,
   MyCarsButton,
+  TotalCars,
 } from "./styles";
 
 import { Car } from "../../components/Car";
+import { LoadAnimation } from "../../components/LoadAnimation";
 
 import { CarDTO } from "../../dtos/CarDTO";
-import { Load } from "../../components/Load";
 
 type Car = CarDTO & {};
 
 export const Home: React.FC = () => {
   const theme = useTheme();
   const { navigate } = useNavigation();
+  const myCarsButtomPositionX = useSharedValue(0);
+  const myCarsButtomPositionY = useSharedValue(0);
+
+  const onGestureEvent = useAnimatedGestureHandler({
+    onStart(_, ctx: any) {
+      ctx.x = myCarsButtomPositionX.value;
+      ctx.y = myCarsButtomPositionY.value;
+    },
+    onActive(event, ctx: any) {
+      myCarsButtomPositionX.value = ctx.x + event.translationX;
+      myCarsButtomPositionY.value = ctx.y + event.translationY;
+    },
+    onEnd() {},
+  });
 
   const [loading, setLoading] = useState(true);
   const [cars, setCars] = useState<Car[]>([]);
+
+  const myCarsAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: myCarsButtomPositionX.value },
+      { translateY: myCarsButtomPositionY.value },
+    ],
+  }));
 
   const totalCars = useMemo(() => {
     const total = cars.length;
@@ -42,16 +69,22 @@ export const Home: React.FC = () => {
     return total === 1 ? `Total de 1 carro` : `Total de ${total} carros`;
   }, [cars]);
 
+  const backHandler = useCallback(() => {
+    return true;
+  }, []);
+
   const handlePressOnCar = useCallback(
     (car: Car) => {
+      BackHandler.removeEventListener("hardwareBackPress", backHandler);
       navigate("CarDetails", { car });
     },
-    [navigate]
+    [navigate, backHandler]
   );
 
   const handleOpenMyCars = useCallback(() => {
+    BackHandler.removeEventListener("hardwareBackPress", backHandler);
     navigate("MyCars");
-  }, [navigate]);
+  }, [navigate, backHandler]);
 
   const loadCars = useCallback(async () => {
     try {
@@ -72,6 +105,18 @@ export const Home: React.FC = () => {
     loadCars();
   }, []);
 
+  useEffect(() => {
+    return () => {
+      BackHandler.removeEventListener("hardwareBackPress", backHandler);
+    };
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      BackHandler.addEventListener("hardwareBackPress", backHandler);
+    }, [backHandler])
+  );
+
   return (
     <Container>
       <Header>
@@ -82,7 +127,7 @@ export const Home: React.FC = () => {
       </Header>
 
       {loading ? (
-        <Load />
+        <LoadAnimation />
       ) : (
         <CarList
           data={cars}
@@ -93,9 +138,26 @@ export const Home: React.FC = () => {
         />
       )}
 
-      <MyCarsButton onPress={handleOpenMyCars}>
-        <Ionicons name="ios-car-sport" size={32} color={theme.colors.shape} />
-      </MyCarsButton>
+      <PanGestureHandler onGestureEvent={onGestureEvent}>
+        <Animated.View
+          style={[
+            myCarsAnimatedStyle,
+            {
+              position: "absolute",
+              bottom: 13,
+              right: 22,
+            },
+          ]}
+        >
+          <MyCarsButton onPress={handleOpenMyCars}>
+            <Ionicons
+              name="ios-car-sport"
+              size={32}
+              color={theme.colors.shape}
+            />
+          </MyCarsButton>
+        </Animated.View>
+      </PanGestureHandler>
     </Container>
   );
 };

@@ -24,7 +24,7 @@ import {
 import { api } from "../../services/api";
 
 import { Car } from "../../components/Car";
-import { Load } from "../../components/Load";
+import { LoadAnimation } from "../../components/LoadAnimation";
 import { BackButton } from "../../components/BackButton";
 
 import { ScheduleDTO } from "../../dtos/ScheduleDTO";
@@ -71,7 +71,7 @@ export const MyCars: React.FC = () => {
       </Header>
 
       {loading ? (
-        <Load />
+        <LoadAnimation />
       ) : (
         <Content>
           <Appointments>

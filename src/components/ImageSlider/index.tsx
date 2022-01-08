@@ -19,7 +19,6 @@ export const ImageSlider: React.FC<ImageSliderProps> = (props) => {
 
   const onChangeItem = useRef((info: ChangeImageProps) => {
     const index = info.viewableItems[0].index!;
-    console.log(info.viewableItems.length);
     setImageIndex(index);
   });
 
