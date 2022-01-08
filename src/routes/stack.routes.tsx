@@ -11,6 +11,7 @@ import { SchedulingComplete } from "../screens/SchedulingComplete";
 import { MyCars } from "../screens/MyCars";
 
 import { CarDTO } from "../dtos/CarDTO";
+import { Splash } from "../screens/Splash";
 
 export type StackRoutesParamList = {
   Home: undefined;
@@ -29,6 +30,7 @@ export type StackRoutesParamList = {
   };
   SchedulingComplete: undefined;
   MyCars: undefined;
+  Splash: undefined;
 };
 
 export const StackRoutes: React.FC = () => {
@@ -37,6 +39,7 @@ export const StackRoutes: React.FC = () => {
       screenOptions={{
         headerShown: false,
       }}
+      initialRouteName="Splash"
     >
       <Screen name={"Home"} component={Home} />
       <Screen name={"CarDetails"} component={CarDetails} />
@@ -44,6 +47,7 @@ export const StackRoutes: React.FC = () => {
       <Screen name={"SchedulingDetails"} component={SchedulingDetails} />
       <Screen name={"SchedulingComplete"} component={SchedulingComplete} />
       <Screen name={"MyCars"} component={MyCars} />
+      <Screen name={"Splash"} component={Splash} />
     </Navigator>
   );
 };
