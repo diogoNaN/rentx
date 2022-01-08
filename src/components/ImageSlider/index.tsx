@@ -1,5 +1,5 @@
-import React from "react";
-import { useTheme } from "styled-components";
+import React, { useRef, useState } from "react";
+import { FlatList, ViewToken } from "react-native";
 
 import { Container, Indexes, Index, CarWrapper, CarImage } from "./styles";
 
@@ -7,23 +7,42 @@ type ImageSliderProps = {
   images: string[];
 };
 
+type ChangeImageProps = {
+  viewableItems: ViewToken[];
+  changed: ViewToken[];
+};
+
 export const ImageSlider: React.FC<ImageSliderProps> = (props) => {
-  const theme = useTheme();
+  const [imageIndex, setImageIndex] = useState(0);
 
   const { images } = props;
+
+  const onChangeItem = useRef((info: ChangeImageProps) => {
+    const index = info.viewableItems[0].index!;
+    console.log(info.viewableItems.length);
+    setImageIndex(index);
+  });
 
   return (
     <Container>
       <Indexes>
-        <Index active={true} />
-        <Index active={false} />
-        <Index active={false} />
-        <Index active={false} />
+        {images.map((_, index) => (
+          <Index key={String(index)} active={imageIndex === index} />
+        ))}
       </Indexes>
 
-      <CarWrapper>
-        <CarImage source={{ uri: images[0] }} resizeMode={"contain"} />
-      </CarWrapper>
+      <FlatList
+        horizontal
+        data={images}
+        keyExtractor={(item) => item}
+        showsHorizontalScrollIndicator={false}
+        renderItem={({ item }) => (
+          <CarWrapper>
+            <CarImage source={{ uri: item }} resizeMode={"contain"} />
+          </CarWrapper>
+        )}
+        onViewableItemsChanged={onChangeItem.current}
+      />
     </Container>
   );
 };
