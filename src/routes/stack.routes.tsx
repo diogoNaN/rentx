@@ -7,11 +7,16 @@ import { Home } from "../screens/Home";
 import { CarDetails } from "../screens/CarDetails";
 import { Scheduling } from "../screens/Scheduling";
 import { SchedulingDetails } from "../screens/SchedulingDetails";
-import { SchedulingComplete } from "../screens/SchedulingComplete";
+import { Confirmation } from "../screens/Confirmation";
 import { MyCars } from "../screens/MyCars";
+import { SignIn } from "../screens/SignIn";
+import { SignUpFirstStep } from "../screens/SignUp/SignUpFirstStep";
+import { SignUpSecondStep } from "../screens/SignUp/SignUpSecondStep";
+import { Splash } from "../screens/Splash";
 
 import { CarDTO } from "../dtos/CarDTO";
-import { Splash } from "../screens/Splash";
+
+type StackRoutes = keyof StackRoutesParamList;
 
 export type StackRoutesParamList = {
   Home: undefined;
@@ -28,9 +33,26 @@ export type StackRoutesParamList = {
       end: string;
     };
   };
-  SchedulingComplete: undefined;
+  Confirmation: {
+    title: string;
+    message: string;
+    nextScreen: {
+      name: StackRoutes;
+      params?: any;
+    };
+  };
   MyCars: undefined;
   Splash: undefined;
+
+  SignIn: undefined;
+  SignUpFirstStep: undefined;
+  SignUpSecondStep: {
+    user: {
+      name: string;
+      email: string;
+      driver_license: string;
+    };
+  };
 };
 
 export const StackRoutes: React.FC = () => {
@@ -39,7 +61,7 @@ export const StackRoutes: React.FC = () => {
       screenOptions={{
         headerShown: false,
       }}
-      initialRouteName="Splash"
+      initialRouteName="SignIn"
     >
       <Screen
         name={"Home"}
@@ -51,9 +73,12 @@ export const StackRoutes: React.FC = () => {
       <Screen name={"CarDetails"} component={CarDetails} />
       <Screen name={"Scheduling"} component={Scheduling} />
       <Screen name={"SchedulingDetails"} component={SchedulingDetails} />
-      <Screen name={"SchedulingComplete"} component={SchedulingComplete} />
+      <Screen name={"Confirmation"} component={Confirmation} />
       <Screen name={"MyCars"} component={MyCars} />
       <Screen name={"Splash"} component={Splash} />
+      <Screen name={"SignIn"} component={SignIn} />
+      <Screen name={"SignUpFirstStep"} component={SignUpFirstStep} />
+      <Screen name={"SignUpSecondStep"} component={SignUpSecondStep} />
     </Navigator>
   );
 };

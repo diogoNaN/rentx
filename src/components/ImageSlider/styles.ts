@@ -9,21 +9,10 @@ export const Container = styled.View`
   width: 100%;
 `;
 
-export const Indexes = styled.View`
+export const Bullets = styled.View`
   flex-direction: row;
   align-self: flex-end;
   padding-right: 24px;
-`;
-
-export const Index = styled.View<IndexProps>`
-  width: 6px;
-  height: 6px;
-
-  background-color: ${({ theme, active }) =>
-    active ? theme.colors.title : theme.colors.shape};
-
-  margin-left: 8px;
-  border-radius: 3px;
 `;
 
 export const CarWrapper = styled.View`

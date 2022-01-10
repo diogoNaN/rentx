@@ -34,11 +34,9 @@ import { Button } from "../../components/Button";
 
 import { getAccessoryIcon } from "../../utils/getAccessoryIcon";
 
-import { CarDTO } from "../../dtos/CarDTO";
+import { StackRoutesParamList } from "../../routes/stack.routes";
 
-type Params = {
-  car: CarDTO;
-};
+type Params = StackRoutesParamList["CarDetails"];
 
 export const CarDetails: React.FC = () => {
   const theme = useTheme();

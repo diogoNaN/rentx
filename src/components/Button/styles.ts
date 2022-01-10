@@ -6,6 +6,10 @@ type ContainerProps = TouchableOpacityProps & {
   color: string;
 };
 
+type TitleProps = {
+  light: boolean;
+};
+
 export const Container = styled(TouchableOpacity).attrs<TouchableOpacityProps>({
   activeOpacity: 0.7,
 })<ContainerProps>`
@@ -18,8 +22,9 @@ export const Container = styled(TouchableOpacity).attrs<TouchableOpacityProps>({
   background-color: ${({ color }) => color};
 `;
 
-export const Title = styled.Text`
+export const Title = styled.Text<TitleProps>`
   font-size: ${RFValue(15)}px;
   font-family: ${({ theme }) => theme.fonts.primary_500};
-  color: ${({ theme }) => theme.colors.shape};
+  color: ${({ theme, light }) =>
+    light ? theme.colors.header : theme.colors.shape};
 `;

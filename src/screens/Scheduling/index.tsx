@@ -27,7 +27,7 @@ import {
   MarkedDateProps,
 } from "../../components/Calendar";
 
-import { CarDTO } from "../../dtos/CarDTO";
+import { StackRoutesParamList } from "../../routes/stack.routes";
 
 type RentalPeriod = {
   start: number;
@@ -36,9 +36,7 @@ type RentalPeriod = {
   endFormatted: string;
 };
 
-type Params = {
-  car: CarDTO;
-};
+type Params = StackRoutesParamList["Scheduling"];
 
 export const Scheduling: React.FC = () => {
   const theme = useTheme();
@@ -130,7 +128,7 @@ export const Scheduling: React.FC = () => {
         <Button
           title="Confirmar"
           onPress={handleConfirmPeriod}
-          enabled={!!rentalPeriod.start && !!rentalPeriod.end}
+          disabled={!rentalPeriod.start && !rentalPeriod.end}
         />
       </Footer>
     </Container>

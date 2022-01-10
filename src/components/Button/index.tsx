@@ -7,8 +7,8 @@ import { Container, Title } from "./styles";
 type ButtomProps = TouchableOpacityProps & {
   title: string;
   color?: string;
-  enabled?: boolean;
   loading?: boolean;
+  light?: boolean;
 };
 
 export const Button: React.FC<ButtomProps> = (props) => {
@@ -17,8 +17,9 @@ export const Button: React.FC<ButtomProps> = (props) => {
   const {
     title,
     color = theme.colors.main,
-    enabled = true,
+    disabled = false,
     loading = false,
+    light = false,
     ...rest
   } = props;
 
@@ -26,15 +27,15 @@ export const Button: React.FC<ButtomProps> = (props) => {
     <Container
       {...rest}
       color={color}
-      disabled={!enabled}
+      disabled={disabled}
       style={{
-        opacity: enabled && !loading ? 1 : 0.5,
+        opacity: !disabled && !loading ? 1 : 0.5,
       }}
     >
       {loading ? (
         <ActivityIndicator color={theme.colors.shape} />
       ) : (
-        <Title>{title}</Title>
+        <Title light={light}>{title}</Title>
       )}
     </Container>
   );

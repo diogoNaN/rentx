@@ -32,6 +32,8 @@ import {
 } from "./styles";
 import theme from "../../styles/theme";
 
+import { api } from "../../services/api";
+
 import { BackButton } from "../../components/BackButton";
 import { ImageSlider } from "../../components/ImageSlider";
 import { Accessory } from "../../components/Accessory";
@@ -39,16 +41,9 @@ import { Button } from "../../components/Button";
 
 import { getAccessoryIcon } from "../../utils/getAccessoryIcon";
 
-import { CarDTO } from "../../dtos/CarDTO";
-import { api } from "../../services/api";
+import { StackRoutesParamList } from "../../routes/stack.routes";
 
-type Params = {
-  car: CarDTO;
-  period: {
-    start: string;
-    end: string;
-  };
-};
+type Params = StackRoutesParamList["SchedulingDetails"];
 
 export const SchedulingDetails: React.FC = () => {
   const route = useRoute();
@@ -112,7 +107,14 @@ export const SchedulingDetails: React.FC = () => {
 
       await api.put(`/schedules_bycars/${car.id}`, formData);
 
-      navigate("SchedulingComplete");
+      navigate("Confirmation", {
+        title: "Carro alugado!",
+        message:
+          "Agora você só precisa ir\naté a concessionária da RENTX\npegar o seu automóvel.",
+        nextScreen: {
+          name: "Confirmation",
+        },
+      });
     } catch (error) {
       console.log(error);
       Alert.alert("Ops", "Não foi possível alugar");
@@ -198,7 +200,7 @@ export const SchedulingDetails: React.FC = () => {
       <Footer>
         <Button
           title={"Alugar agora"}
-          enabled={!loading}
+          disabled={loading}
           loading={loading}
           color={theme.colors.success}
           onPress={handleCreateRental}
