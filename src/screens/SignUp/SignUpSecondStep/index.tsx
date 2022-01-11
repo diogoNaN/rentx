@@ -22,18 +22,23 @@ import {
   FormTitle,
 } from "./styles";
 
+import { api } from "../../../services/api";
+
+import {
+  AuthRoutesParamList,
+  AuthRoutesNavigationProps,
+} from "../../../routes/auth.routes";
+
 import { Button } from "../../../components/Button";
 import { Bullet } from "../../../components/Bullet";
 import { BackButton } from "../../../components/BackButton";
 import { PasswordInput } from "../../../components/PasswordInput";
 
-import { StackRoutesParamList } from "../../../routes/stack.routes";
-
-type Params = StackRoutesParamList["SignUpSecondStep"];
+type Params = AuthRoutesParamList["SignUpSecondStep"];
 
 export const SignUpSecondStep: React.FC = () => {
   const theme = useTheme();
-  const { goBack, navigate } = useNavigation();
+  const { goBack, navigate } = useNavigation<AuthRoutesNavigationProps>();
   const route = useRoute();
 
   const {
@@ -57,7 +62,7 @@ export const SignUpSecondStep: React.FC = () => {
 
     try {
       setLoading(true);
-      const formData = {
+      const data = {
         password,
         password_confirm: passwordConfirm,
         name,
@@ -65,23 +70,20 @@ export const SignUpSecondStep: React.FC = () => {
         driver_license,
       };
 
-      await schema.validate(formData, { abortEarly: false });
+      await schema.validate(data, { abortEarly: false });
 
-      // enviar para api
-
-      navigate("Confirmation", {
-        title: "Conta criada!",
-        message: "Agora é so fazer login\ne aproveitar",
-        nextScreen: {
-          name: "Confirmation",
-        },
+      await api.post("/users", {
+        name,
+        email,
+        password,
+        driver_license,
       });
 
       navigate("Confirmation", {
         title: "Conta criada!",
         message: "Agora é so fazer login\ne aproveitar",
-        nextScreen: {
-          name: "Home",
+        button: {
+          onPress: () => navigate("SignIn"),
         },
       });
     } catch (error) {
@@ -94,7 +96,7 @@ export const SignUpSecondStep: React.FC = () => {
       }
 
       console.log(error);
-      Alert.alert("Ops", "Não foi possível entrar");
+      Alert.alert("Ops", "Não foi possível cadastrar");
     } finally {
       setLoading(false);
     }
@@ -109,8 +111,8 @@ export const SignUpSecondStep: React.FC = () => {
             <BackButton onPress={goBack} />
 
             <Steps>
-              <Bullet active />
               <Bullet />
+              <Bullet active />
             </Steps>
           </Header>
 

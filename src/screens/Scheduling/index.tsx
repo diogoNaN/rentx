@@ -27,7 +27,10 @@ import {
   MarkedDateProps,
 } from "../../components/Calendar";
 
-import { StackRoutesParamList } from "../../routes/stack.routes";
+import {
+  AppStackRoutesNavigationProps,
+  AppStackRoutesParamList,
+} from "../../routes/app.stack.routes";
 
 type RentalPeriod = {
   start: number;
@@ -36,12 +39,12 @@ type RentalPeriod = {
   endFormatted: string;
 };
 
-type Params = StackRoutesParamList["Scheduling"];
+type Params = AppStackRoutesParamList["Scheduling"];
 
 export const Scheduling: React.FC = () => {
   const theme = useTheme();
   const route = useRoute();
-  const { navigate, goBack } = useNavigation();
+  const { navigate, goBack } = useNavigation<AppStackRoutesNavigationProps>();
 
   const { car } = route.params as Params;
 

@@ -41,13 +41,16 @@ import { Button } from "../../components/Button";
 
 import { getAccessoryIcon } from "../../utils/getAccessoryIcon";
 
-import { StackRoutesParamList } from "../../routes/stack.routes";
+import {
+  AppStackRoutesParamList,
+  AppStackRoutesNavigationProps,
+} from "../../routes/app.stack.routes";
 
-type Params = StackRoutesParamList["SchedulingDetails"];
+type Params = AppStackRoutesParamList["SchedulingDetails"];
 
 export const SchedulingDetails: React.FC = () => {
   const route = useRoute();
-  const { navigate, goBack } = useNavigation();
+  const { navigate, goBack } = useNavigation<AppStackRoutesNavigationProps>();
 
   const [loading, setLoading] = useState(false);
 
@@ -111,8 +114,8 @@ export const SchedulingDetails: React.FC = () => {
         title: "Carro alugado!",
         message:
           "Agora você só precisa ir\naté a concessionária da RENTX\npegar o seu automóvel.",
-        nextScreen: {
-          name: "Confirmation",
+        button: {
+          onPress: () => navigate("Home"),
         },
       });
     } catch (error) {
@@ -141,8 +144,8 @@ export const SchedulingDetails: React.FC = () => {
             <Name>{car.name}</Name>
           </Description>
           <Rent>
-            <Period>{car.rent.period}</Period>
-            <Price>R$ {car.rent.price}</Price>
+            <Period>{car.period}</Period>
+            <Price>R$ {car.price}</Price>
           </Rent>
         </Details>
 
@@ -186,12 +189,12 @@ export const SchedulingDetails: React.FC = () => {
           <RentalPriceLabel>Total</RentalPriceLabel>
           <RentalPriceDetails>
             <RentalPriceQuota>
-              {`R$ ${car.rent.price} x${dates.total} ${
+              {`R$ ${car.price} x${dates.total} ${
                 dates.total > 1 ? "diárias" : "diária"
               }`}
             </RentalPriceQuota>
             <RentalPriceTotal>{`R$ ${
-              car.rent.price * dates.total
+              car.price * dates.total
             }`}</RentalPriceTotal>
           </RentalPriceDetails>
         </RentalPrice>

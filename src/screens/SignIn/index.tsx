@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { useTheme } from "styled-components";
+import { useNavigation } from "@react-navigation/native";
 import {
   Alert,
   Keyboard,
@@ -20,14 +21,18 @@ import {
   FooterSpacement,
 } from "./styles";
 
+import { AuthRoutesNavigationProps } from "../../routes/auth.routes";
+
+import { useAuth } from "../../hooks/auth";
+
 import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
 import { PasswordInput } from "../../components/PasswordInput";
-import { useNavigation } from "@react-navigation/native";
 
 export const SignIn: React.FC = () => {
   const theme = useTheme();
-  const { navigate } = useNavigation();
+  const { signIn } = useAuth();
+  const { navigate } = useNavigation<AuthRoutesNavigationProps>();
 
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
@@ -44,6 +49,11 @@ export const SignIn: React.FC = () => {
     try {
       setLoading(true);
       await schema.validate({ email, password }, { abortEarly: false });
+
+      await signIn({
+        email,
+        password,
+      });
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         let message = "";

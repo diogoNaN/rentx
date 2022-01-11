@@ -34,14 +34,17 @@ import { Button } from "../../components/Button";
 
 import { getAccessoryIcon } from "../../utils/getAccessoryIcon";
 
-import { StackRoutesParamList } from "../../routes/stack.routes";
+import {
+  AppStackRoutesParamList,
+  AppStackRoutesNavigationProps,
+} from "../../routes/app.stack.routes";
 
-type Params = StackRoutesParamList["CarDetails"];
+type Params = AppStackRoutesParamList["CarDetails"];
 
 export const CarDetails: React.FC = () => {
   const theme = useTheme();
   const route = useRoute();
-  const { navigate, goBack } = useNavigation();
+  const { navigate, goBack } = useNavigation<AppStackRoutesNavigationProps>();
 
   const { car } = route.params as Params;
 
@@ -100,8 +103,8 @@ export const CarDetails: React.FC = () => {
             <Name>{car.name}</Name>
           </Description>
           <Rent>
-            <Period>{car.rent.period}</Period>
-            <Price>R$ {car.rent.price}</Price>
+            <Period>{car.period}</Period>
+            <Price>R$ {car.price}</Price>
           </Rent>
         </Details>
 
@@ -115,17 +118,7 @@ export const CarDetails: React.FC = () => {
           ))}
         </Accessories>
 
-        <About>
-          {car.about}
-          {car.about}
-          {car.about}
-          {car.about}
-          {car.about}
-          {car.about}
-          {car.about}
-          {car.about}
-          {car.about}
-        </About>
+        <About>{car.about}</About>
       </Animated.ScrollView>
 
       <Footer>

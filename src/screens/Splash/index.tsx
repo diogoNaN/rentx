@@ -1,4 +1,3 @@
-import { useNavigation } from "@react-navigation/native";
 import React, { useEffect } from "react";
 import Animated, {
   interpolate,
@@ -8,14 +7,16 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
+import { Container } from "./styles";
+
+import { useAuth } from "../../hooks/auth";
+
 import BrandSvg from "../../assets/brand.svg";
 import LogoSvg from "../../assets/logo.svg";
 
-import { Container } from "./styles";
-
 export const Splash: React.FC = () => {
   const animation = useSharedValue(0);
-  const { navigate } = useNavigation();
+  const { splashDone } = useAuth();
 
   const brandAnimatedStyle = useAnimatedStyle(() => {
     return {
@@ -50,7 +51,7 @@ export const Splash: React.FC = () => {
   });
 
   const startApp = () => {
-    navigate("Home");
+    splashDone();
   };
 
   useEffect(() => {

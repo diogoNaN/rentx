@@ -1,5 +1,5 @@
 import React from "react";
-import { TouchableOpacityProps } from "react-native";
+import { RectButtonProps } from "react-native-gesture-handler";
 
 import { getAccessoryIcon } from "../../utils/getAccessoryIcon";
 
@@ -20,7 +20,7 @@ import {
 
 type Car = CarDTO & {};
 
-type CarProps = TouchableOpacityProps & {
+type CarProps = RectButtonProps & {
   data: Car;
 };
 
@@ -36,8 +36,8 @@ export const Car: React.FC<CarProps> = (props) => {
         <Name>{data.name}</Name>
         <About>
           <Rent>
-            <Period>{data.rent.period}</Period>
-            <Price>{`R$ ${data.rent.price}`}</Price>
+            <Period>{data.period}</Period>
+            <Price>{`R$ ${data.price}`}</Price>
           </Rent>
           <Type>
             <MotorIcon />

@@ -21,13 +21,15 @@ import {
   FormTitle,
 } from "./styles";
 
+import { AuthRoutesNavigationProps } from "../../../routes/auth.routes";
+
 import { Button } from "../../../components/Button";
 import { Input } from "../../../components/Input";
 import { BackButton } from "../../../components/BackButton";
 import { Bullet } from "../../../components/Bullet";
 
 export const SignUpFirstStep: React.FC = () => {
-  const { goBack, navigate } = useNavigation();
+  const { goBack, navigate } = useNavigation<AuthRoutesNavigationProps>();
 
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
@@ -78,8 +80,8 @@ export const SignUpFirstStep: React.FC = () => {
             <BackButton onPress={goBack} />
 
             <Steps>
-              <Bullet />
               <Bullet active />
+              <Bullet />
             </Steps>
           </Header>
 

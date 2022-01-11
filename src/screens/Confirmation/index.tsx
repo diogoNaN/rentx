@@ -7,24 +7,31 @@ import { Container, Content, Title, Message, Footer } from "./styles";
 import LogoSvg from "../../assets/logo_background_gray.svg";
 import DoneSvg from "../../assets/done.svg";
 
-import { ConfirmButton } from "../../components/ConfirmButton";
-import { StackRoutesParamList } from "../../routes/stack.routes";
+import {
+  AppStackRoutesNavigationProps,
+  AppStackRoutesParamList,
+} from "../../routes/app.stack.routes";
 
-type Params = StackRoutesParamList["Confirmation"];
+import { ConfirmButton } from "../../components/ConfirmButton";
+import { AuthRoutesParamList } from "../../routes/auth.routes";
+
+type Params =
+  | AppStackRoutesParamList["Confirmation"]
+  | AuthRoutesParamList["Confirmation"];
 
 export const Confirmation: React.FC = () => {
   const route = useRoute();
-  const { navigate } = useNavigation();
+  const { navigate } = useNavigation<AppStackRoutesNavigationProps>();
   const { width } = useWindowDimensions();
 
   const {
     title,
     message,
-    nextScreen: { name, params },
+    button: { text = "Ok", onPress },
   } = route.params as Params;
 
   const handleDoneRental = useCallback(() => {
-    navigate(name, params);
+    onPress;
   }, [navigate]);
 
   return (
@@ -41,7 +48,7 @@ export const Confirmation: React.FC = () => {
       </Content>
 
       <Footer>
-        <ConfirmButton title={"Ok"} onPress={handleDoneRental} />
+        <ConfirmButton title={text} onPress={handleDoneRental} />
       </Footer>
     </Container>
   );
