@@ -55,6 +55,8 @@ export const SignIn: React.FC = () => {
         password,
       });
     } catch (error) {
+      setLoading(false);
+
       if (error instanceof Yup.ValidationError) {
         let message = "";
 
@@ -65,8 +67,6 @@ export const SignIn: React.FC = () => {
 
       console.log(error);
       Alert.alert("Ops", "Não foi possível entrar");
-    } finally {
-      setLoading(false);
     }
   }, [email, password]);
 

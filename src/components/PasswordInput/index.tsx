@@ -49,9 +49,10 @@ export const PasswordInput: React.FC<InputProps> = (props) => {
         />
       </IconContainer>
       <InputText
+        autoCorrect={false}
+        secureTextEntry={!visible}
         onFocus={onFocus}
         onBlur={onBlur}
-        secureTextEntry={!visible}
         {...rest}
       />
       <VisibilityButton onPress={handleChangeVisibility}>

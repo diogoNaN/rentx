@@ -1,63 +1,115 @@
 import styled from "styled-components/native";
-import { RFValue } from "react-native-responsive-fontsize";
-import { FlatList, FlatListProps } from "react-native";
-import Animated from "react-native-reanimated";
 
-import { CarDTO } from "../../dtos/CarDTO";
 import {
+  BorderlessButton,
   GestureHandlerRootView,
   RectButton,
 } from "react-native-gesture-handler";
+import { getStatusBarHeight } from "react-native-iphone-x-helper";
+import { RFValue } from "react-native-responsive-fontsize";
 
-export type CarProps = CarDTO & {};
+type OptionProps = {
+  active?: boolean;
+};
 
-type CarListProps = FlatListProps<CarProps> & {};
+type OptionNameProps = {
+  active?: boolean;
+};
 
 export const Container = styled(GestureHandlerRootView)`
-  flex: 1;
   background-color: ${({ theme }) => theme.colors.background_primary};
 `;
 
 export const Header = styled.View`
   width: 100%;
-  height: 113px;
+  height: 227px;
 
   background-color: ${({ theme }) => theme.colors.header};
 
-  justify-content: flex-end;
-  padding: 32px 24px;
+  padding: 0 24px;
+  align-items: center;
 `;
 
-export const HeaderContent = styled.View`
+export const HeaderTop = styled.View`
+  width: 100%;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
+
+  margin-top: ${getStatusBarHeight() + 32}px;
 `;
 
-export const TotalCars = styled.Text`
-  font-size: ${RFValue(15)}px;
-  font-family: ${({ theme }) => theme.fonts.primary_400};
-  color: ${({ theme }) => theme.colors.text};
+export const HeaderTitle = styled.Text`
+  font-size: ${RFValue(25)}px;
+  font-family: ${({ theme }) => theme.fonts.secondary_600};
+  color: ${({ theme }) => theme.colors.background_secondary};
 `;
 
-export const CarList = styled(FlatList as new () => FlatList<CarProps>).attrs({
-  contentContainerStyle: {
-    padding: 24,
-  },
-  showVerticalScrollIndicator: false,
-})<CarListProps>``;
+export const LogoutButton = styled(BorderlessButton)``;
 
-export const MyCarsButton = styled(
-  Animated.createAnimatedComponent(RectButton)
-).attrs({
-  activeOpacity: 0.7,
-})`
-  width: 60px;
-  height: 60px;
+export const PhotoContainer = styled.View`
+  width: 180px;
+  height: 180px;
+  border-radius: 90px;
 
-  border-radius: 30px;
+  background-color: ${({ theme }) => theme.colors.shape};
+  margin-top: 48px;
+`;
+
+export const Photo = styled.Image`
+  width: 180px;
+  height: 180px;
+  border-radius: 90px;
+`;
+
+export const PhotoButton = styled(RectButton)`
+  width: 40px;
+  height: 40px;
 
   align-items: center;
   justify-content: center;
 
   background-color: ${({ theme }) => theme.colors.main};
+
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
 `;
+
+export const Content = styled.View`
+  padding: 0 24px;
+  margin-top: 122px;
+`;
+
+export const ContentHeader = styled.View``;
+
+export const Options = styled.View`
+  border-bottom-width: 1px;
+  border-bottom-color: ${({ theme }) => theme.colors.line};
+
+  flex-direction: row;
+  justify-content: space-around;
+
+  margin-bottom: 24px;
+`;
+
+export const Option = styled.TouchableOpacity.attrs({
+  activeOpacity: 0.7,
+})<OptionProps>`
+  margin-bottom: -1px;
+  padding-bottom: 14px;
+
+  border-bottom-width: 2px;
+  border-bottom-color: ${({ theme, active }) =>
+    active ? theme.colors.main : "transparent"};
+`;
+
+export const OptionName = styled.Text<OptionNameProps>`
+  font-size: ${RFValue(20)}px;
+  font-family: ${({ theme, active }) =>
+    active ? theme.fonts.secondary_600 : theme.fonts.secondary_500};
+  color: ${({ theme, active }) =>
+    active ? theme.colors.header : theme.colors.text_detail};
+`;
+
+export const Section = styled.View``;

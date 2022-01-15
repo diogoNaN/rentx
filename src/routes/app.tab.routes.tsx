@@ -11,7 +11,7 @@ import ProfileSvg from "../assets/bottomTab/people.svg";
 import CarSvg from "../assets/bottomTab/car.svg";
 
 export type AppTabRoutesParamList = {
-  Home: undefined;
+  TabHome: undefined;
   Profile: undefined;
   MyCars: undefined;
 };
@@ -44,23 +44,13 @@ export const AppTabRoutes: React.FC = () => {
       }}
     >
       <Screen
-        name={"Home"}
+        name={"TabHome"}
         options={{
           tabBarIcon: ({ color, size }) => (
             <HomeSvg fill={color} width={size} height={size} />
           ),
         }}
         component={AppStackRoutes}
-      />
-
-      <Screen
-        name={"Profile"}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <ProfileSvg fill={color} width={size} height={size} />
-          ),
-        }}
-        component={Profile}
       />
 
       <Screen
@@ -71,6 +61,16 @@ export const AppTabRoutes: React.FC = () => {
           ),
         }}
         component={MyCars}
+      />
+
+      <Screen
+        name={"Profile"}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <ProfileSvg fill={color} width={size} height={size} />
+          ),
+        }}
+        component={Profile}
       />
     </Navigator>
   );
