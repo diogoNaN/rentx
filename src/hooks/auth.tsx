@@ -3,10 +3,13 @@ import React, {
   ReactNode,
   useCallback,
   useContext,
+  useEffect,
   useState,
 } from "react";
 
 import { api } from "../services/api";
+import { database } from "../database";
+import { User as ModelUser } from "../database/models/User";
 
 type User = {
   id: string;
@@ -14,11 +17,7 @@ type User = {
   name: string;
   driver_license: string;
   avatar: string;
-};
-
-type AuthState = {
   token: string;
-  user: User;
 };
 
 type SignInCredentials = {
@@ -41,25 +40,41 @@ const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loaded, setLoaded] = useState(false);
-  const [data, setData] = useState<AuthState>({} as AuthState);
+  const [user, setUser] = useState<User>({} as User);
 
   const signIn = useCallback(
     async (data: SignInCredentials) => {
-      const { email, password } = data;
+      try {
+        const { email, password } = data;
 
-      const response = await api.post("/sessions", {
-        email,
-        password,
-      });
+        const response = await api.post("/sessions", {
+          email,
+          password,
+        });
 
-      const { user, token } = response.data;
+        const { user, token } = response.data;
 
-      // api.defaults.headers["authorization"] = `Bearer ${token}`;
+        api.defaults.headers.common["authorization"] = `Bearer ${token}`;
 
-      setData({
-        token,
-        user,
-      });
+        const userCollection = database.get<ModelUser>("users");
+        await database.write(async () => {
+          await userCollection.create((newUser) => {
+            (newUser.user_id = user.id),
+              (newUser.name = user.name),
+              (newUser.email = user.email),
+              (newUser.driver_license = user.driver_license),
+              (newUser.avatar = user.avatar),
+              (newUser.token = user.token);
+          });
+        });
+
+        setUser({
+          ...user,
+          token,
+        });
+      } catch (error) {
+        throw new Error(error as any);
+      }
     },
     [api]
   );
@@ -68,11 +83,26 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setLoaded(true);
   }, []);
 
+  const loadUser = useCallback(async () => {
+    const userCollection = database.get<ModelUser>("users");
+    const response = await userCollection.query().fetch();
+
+    if (response.length > 0) {
+      const userData = response[0];
+      api.defaults.headers.common["authorization"] = `Bearer ${userData.token}`;
+      setUser(userData);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadUser();
+  }, []);
+
   return (
     <AuthContext.Provider
       value={{
         loaded,
-        user: data.user,
+        user,
         signIn,
         splashDone,
       }}

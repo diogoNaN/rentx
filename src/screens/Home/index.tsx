@@ -74,23 +74,31 @@ export const Home: React.FC = () => {
     [navigate, backHandler]
   );
 
-  const loadCars = useCallback(async () => {
-    try {
-      setLoading(true);
-
-      const response = await api.get("/cars");
-
-      setCars(response.data);
-    } catch (error) {
-      console.log(error);
-      Alert.alert("Ops", "Não foi possível buscar os carros");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
+    let isMounted = true;
+
+    const loadCars = async () => {
+      try {
+        setLoading(true);
+
+        const response = await api.get("/cars");
+
+        if (isMounted) {
+          setCars(response.data);
+        }
+      } catch (error) {
+        console.log(error);
+        Alert.alert("Ops", "Não foi possível buscar os carros");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     loadCars();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return (
