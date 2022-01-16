@@ -85,30 +85,21 @@ export const SchedulingDetails: React.FC = () => {
     };
   }, [parsedPeriod]);
 
+  const rentTotal = useMemo(() => {
+    return dates.total * car.price;
+  }, [dates]);
+
   const handleCreateRental = useCallback(async () => {
     setLoading(true);
 
     try {
-      const schedulesByCar = await api.get(`/schedules_bycars/${car.id}`);
-
-      const formData = {
-        id: car.id,
-        unavailable_dates: [
-          ...schedulesByCar.data.unavailable_dates,
-          ...dates.days_formatted.filter(
-            (day) => !schedulesByCar.data.unavailable_dates.includes(day)
-          ),
-        ],
-      };
-
-      await api.post(`/schedules_byuser`, {
+      await api.post(`/rentals`, {
         user_id: 1,
-        car,
+        car_id: car.id,
         start_date: parsedPeriod.start.toISOString(),
         end_date: parsedPeriod.end.toISOString(),
+        total: rentTotal,
       });
-
-      await api.put(`/schedules_bycars/${car.id}`, formData);
 
       navigate("Confirmation", {
         title: "Carro alugado!",
@@ -124,7 +115,7 @@ export const SchedulingDetails: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [navigate, car, dates, parsedPeriod]);
+  }, [navigate, car, parsedPeriod, rentTotal]);
 
   return (
     <Container>
@@ -193,9 +184,7 @@ export const SchedulingDetails: React.FC = () => {
                 dates.total > 1 ? "diárias" : "diária"
               }`}
             </RentalPriceQuota>
-            <RentalPriceTotal>{`R$ ${
-              car.price * dates.total
-            }`}</RentalPriceTotal>
+            <RentalPriceTotal>{`R$ ${rentTotal}`}</RentalPriceTotal>
           </RentalPriceDetails>
         </RentalPrice>
       </Content>

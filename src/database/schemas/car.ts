@@ -4,10 +4,6 @@ export const carSchema = tableSchema({
   name: "cars",
   columns: [
     {
-      name: "car_id",
-      type: "string",
-    },
-    {
       name: "name",
       type: "string",
     },

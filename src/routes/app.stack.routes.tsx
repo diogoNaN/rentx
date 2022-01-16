@@ -15,10 +15,21 @@ import { Confirmation } from "../screens/Confirmation";
 
 import { CarDTO } from "../dtos/CarDTO";
 
+type CarProps = {
+  id: string;
+  name: string;
+  brand: string;
+  about: string;
+  fuel_type: string;
+  period: string;
+  price: number;
+  thumbnail: string;
+};
+
 export type AppStackRoutesParamList = {
   Home: undefined;
   CarDetails: {
-    car: CarDTO;
+    car: CarProps;
   };
   Scheduling: {
     car: CarDTO;
@@ -38,7 +49,6 @@ export type AppStackRoutesParamList = {
       onPress: () => void;
     };
   };
-  MyCars: undefined;
 };
 
 export type AppStackRoutesNavigationProps =

@@ -2,16 +2,23 @@ import styled from "styled-components/native";
 import { RFValue } from "react-native-responsive-fontsize";
 import { FlatList, FlatListProps } from "react-native";
 import Animated from "react-native-reanimated";
-
-import { CarDTO } from "../../dtos/CarDTO";
 import {
   GestureHandlerRootView,
   RectButton,
 } from "react-native-gesture-handler";
 
-export type CarProps = CarDTO & {};
+export type ICar = {
+  id: string;
+  name: string;
+  brand: string;
+  about: string;
+  fuel_type: string;
+  period: string;
+  price: number;
+  thumbnail: string;
+};
 
-type CarListProps = FlatListProps<CarProps> & {};
+type CarListProps = FlatListProps<ICar> & {};
 
 export const Container = styled(GestureHandlerRootView)`
   flex: 1;
@@ -39,7 +46,7 @@ export const TotalCars = styled.Text`
   color: ${({ theme }) => theme.colors.text};
 `;
 
-export const CarList = styled(FlatList as new () => FlatList<CarProps>).attrs({
+export const CarList = styled(FlatList as new () => FlatList<ICar>).attrs({
   contentContainerStyle: {
     padding: 24,
   },

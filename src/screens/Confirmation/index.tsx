@@ -21,8 +21,8 @@ type Params =
 
 export const Confirmation: React.FC = () => {
   const route = useRoute();
-  const { navigate } = useNavigation<AppStackRoutesNavigationProps>();
   const { width } = useWindowDimensions();
+  const { navigate } = useNavigation<AppStackRoutesNavigationProps>();
 
   const {
     title,
@@ -31,8 +31,8 @@ export const Confirmation: React.FC = () => {
   } = route.params as Params;
 
   const handleDoneRental = useCallback(() => {
-    onPress;
-  }, [navigate]);
+    onPress();
+  }, [navigate, onPress]);
 
   return (
     <Container>
@@ -42,6 +42,7 @@ export const Confirmation: React.FC = () => {
 
       <Content>
         <DoneSvg width={80} height={80} />
+
         <Title>{title}</Title>
 
         <Message>{message}</Message>

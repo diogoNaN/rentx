@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Alert } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import { useNavigation } from "@react-navigation/native";
+import { useNetInfo } from "@react-native-community/netinfo";
+import { synchronize } from "@nozbe/watermelondb/sync";
 // import { Ionicons } from "@expo/vector-icons";
 // import { useTheme } from "styled-components";
 // import Animated, {
@@ -12,21 +14,27 @@ import { useNavigation } from "@react-navigation/native";
 // import { PanGestureHandler } from "react-native-gesture-handler";
 
 import { api } from "../../services/api";
+import { database } from "../../database";
+import { Car as ModelCar } from "../../database/models/Car";
 
 import LogoSvg from "../../assets/logo.svg";
 
-import { CarList, Container, Header, HeaderContent, TotalCars } from "./styles";
+import {
+  CarList,
+  Container,
+  Header,
+  HeaderContent,
+  TotalCars,
+  ICar,
+} from "./styles";
 
 import { AppStackRoutesNavigationProps } from "../../routes/app.stack.routes";
 
 import { Car } from "../../components/Car";
 import { LoadAnimation } from "../../components/LoadAnimation";
 
-import { CarDTO } from "../../dtos/CarDTO";
-
-type Car = CarDTO & {};
-
 export const Home: React.FC = () => {
+  const netInfo = useNetInfo();
   const { navigate } = useNavigation<AppStackRoutesNavigationProps>();
   // const myCarsButtomPositionX = useSharedValue(0);
   // const myCarsButtomPositionY = useSharedValue(0);
@@ -44,7 +52,7 @@ export const Home: React.FC = () => {
   // });
 
   const [loading, setLoading] = useState(true);
-  const [cars, setCars] = useState<Car[]>([]);
+  const [cars, setCars] = useState<ICar[]>([]);
 
   // const myCarsAnimatedStyle = useAnimatedStyle(() => ({
   //   transform: [
@@ -63,16 +71,31 @@ export const Home: React.FC = () => {
     return total === 1 ? `Total de 1 carro` : `Total de ${total} carros`;
   }, [cars]);
 
-  const backHandler = useCallback(() => {
-    return true;
-  }, []);
-
   const handlePressOnCar = useCallback(
-    (car: Car) => {
+    (car: ICar) => {
       navigate("CarDetails", { car });
     },
-    [navigate, backHandler]
+    [navigate]
   );
+
+  const offlineSynchronize = useCallback(async () => {
+    await synchronize({
+      database,
+      pullChanges: async ({ lastPulledAt }) => {
+        const response = await api.get(
+          `/cars/sync/pull?lastPulledVersion=${lastPulledAt || 0}`
+        );
+
+        const { changes, latestVersion } = response.data;
+
+        return { changes, timestamp: latestVersion };
+      },
+      pushChanges: async ({ changes }) => {
+        const user = changes.users;
+        await api.post("/users/sync", user);
+      },
+    });
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -81,10 +104,23 @@ export const Home: React.FC = () => {
       try {
         setLoading(true);
 
-        const response = await api.get("/cars");
+        const carCollection = database.get<ModelCar>("cars");
+
+        const cars = await carCollection.query().fetch();
 
         if (isMounted) {
-          setCars(response.data);
+          const formattedData: ICar[] = cars.map((item) => ({
+            id: item.id,
+            name: item.name,
+            brand: item.brand,
+            fuel_type: item.fuel_type,
+            about: item.about,
+            period: item.period,
+            price: item.price,
+            thumbnail: item.thumbnail,
+          }));
+
+          setCars(formattedData);
         }
       } catch (error) {
         console.log(error);
@@ -100,6 +136,12 @@ export const Home: React.FC = () => {
       isMounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (netInfo.isConnected === true) {
+      offlineSynchronize();
+    }
+  }, [netInfo.isConnected]);
 
   return (
     <Container>

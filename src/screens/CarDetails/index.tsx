@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { StatusBar } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "styled-components";
@@ -25,6 +25,7 @@ import {
   Accessories,
   About,
   Footer,
+  OfflineInfo,
 } from "./styles";
 
 import { BackButton } from "../../components/BackButton";
@@ -38,13 +39,19 @@ import {
   AppStackRoutesParamList,
   AppStackRoutesNavigationProps,
 } from "../../routes/app.stack.routes";
+import { CarDTO } from "../../dtos/CarDTO";
+import { api } from "../../services/api";
+import { useNetInfo } from "@react-native-community/netinfo";
 
 type Params = AppStackRoutesParamList["CarDetails"];
 
 export const CarDetails: React.FC = () => {
   const theme = useTheme();
   const route = useRoute();
+  const { isConnected } = useNetInfo();
   const { navigate, goBack } = useNavigation<AppStackRoutesNavigationProps>();
+
+  const [carData, setCarData] = useState<CarDTO>({} as CarDTO);
 
   const { car } = route.params as Params;
 
@@ -60,8 +67,28 @@ export const CarDetails: React.FC = () => {
   }));
 
   const handleConfirmDetails = useCallback(() => {
-    navigate("Scheduling", { car });
-  }, [navigate, car]);
+    navigate("Scheduling", { car: carData });
+  }, [navigate, carData]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const getCarData = async () => {
+      const response = await api.get(`/cars/${car.id}`);
+
+      if (isMounted) {
+        setCarData(response.data);
+      }
+    };
+
+    if (isConnected === true) {
+      getCarData();
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isConnected]);
 
   return (
     <Container>
@@ -83,7 +110,18 @@ export const CarDetails: React.FC = () => {
 
         <Animated.View style={carImagesAnimatedStyle}>
           <CarImages>
-            <ImageSlider images={car.photos} />
+            <ImageSlider
+              images={
+                !!carData.photos
+                  ? carData.photos
+                  : [
+                      {
+                        id: car.thumbnail,
+                        photo: car.thumbnail,
+                      },
+                    ]
+              }
+            />
           </CarImages>
         </Animated.View>
       </Animated.View>
@@ -104,19 +142,21 @@ export const CarDetails: React.FC = () => {
           </Description>
           <Rent>
             <Period>{car.period}</Period>
-            <Price>R$ {car.price}</Price>
+            <Price>R$ {isConnected === true ? carData.price : "..."}</Price>
           </Rent>
         </Details>
 
-        <Accessories>
-          {car.accessories.map((item) => (
-            <Accessory
-              key={item.name}
-              name={item.name}
-              icon={getAccessoryIcon(item.type)}
-            />
-          ))}
-        </Accessories>
+        {carData.accessories && (
+          <Accessories>
+            {carData.accessories.map((item) => (
+              <Accessory
+                key={item.name}
+                name={item.name}
+                icon={getAccessoryIcon(item.type)}
+              />
+            ))}
+          </Accessories>
+        )}
 
         <About>{car.about}</About>
       </Animated.ScrollView>
@@ -125,7 +165,14 @@ export const CarDetails: React.FC = () => {
         <Button
           title="Escolher período do aluguel"
           onPress={handleConfirmDetails}
+          disabled={isConnected === false}
         />
+        {isConnected === false && (
+          <OfflineInfo>
+            Conecte-se à internet para ver mais detalhes e prosseguir com o
+            aluguel do carro.
+          </OfflineInfo>
+        )}
       </Footer>
     </Container>
   );

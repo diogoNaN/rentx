@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Alert, FlatList, StatusBar } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
 import { useTheme } from "styled-components";
 import { format, parseISO } from "date-fns";
@@ -22,38 +22,53 @@ import {
 } from "./styles";
 
 import { api } from "../../services/api";
+import { Car as ModelCar } from "../../database/models/Car";
 
 import { Car } from "../../components/Car";
 import { LoadAnimation } from "../../components/LoadAnimation";
 import { BackButton } from "../../components/BackButton";
 
-import { ScheduleDTO } from "../../dtos/ScheduleDTO";
+type ScheduleProps = {
+  id: string;
+  car: ModelCar;
+  start_date: string;
+  end_date: string;
+};
 
 export const MyCars: React.FC = () => {
   const theme = useTheme();
+  const isFocused = useIsFocused();
   const { navigate, goBack } = useNavigation();
 
   const [loading, setLoading] = useState(false);
-  const [schedules, setSchedules] = useState<ScheduleDTO[]>([]);
-
-  const loadSchedules = useCallback(async () => {
-    try {
-      setLoading(true);
-
-      const response = await api.get("/schedules_byuser?user_id=1");
-
-      setSchedules(response.data);
-    } catch (error) {
-      console.log(error);
-      Alert.alert("Ops", "Não foi possível obter os agendamentos");
-    } finally {
-      setLoading(false);
-    }
-  }, [api]);
+  const [schedules, setSchedules] = useState<ScheduleProps[]>([]);
 
   useEffect(() => {
-    loadSchedules();
-  }, []);
+    let isMounted = true;
+
+    const loadRentals = async () => {
+      try {
+        setLoading(true);
+
+        const response = await api.get("/rentals");
+
+        setLoading(false);
+        setSchedules(response.data);
+      } catch (error) {
+        console.log(error);
+        if (isMounted) {
+          setLoading(false);
+          Alert.alert("Ops", "Não foi possível obter os agendamentos");
+        }
+      }
+    };
+
+    loadRentals();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isFocused]);
 
   return (
     <Container>

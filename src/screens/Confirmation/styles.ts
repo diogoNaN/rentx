@@ -1,27 +1,20 @@
 import styled from "styled-components/native";
-import {
-  getBottomSpace,
-  getStatusBarHeight,
-} from "react-native-iphone-x-helper";
 import { RFValue } from "react-native-responsive-fontsize";
 
 export const Container = styled.View`
   flex: 1;
   background-color: ${({ theme }) => theme.colors.header};
 
-  padding-top: 96px;
+  padding-top: ${RFValue(24)}px;
 `;
 
 export const Content = styled.View`
-  flex: 1;
   align-items: center;
   justify-content: center;
-
-  padding-bottom: 80px;
 `;
 
 export const Title = styled.Text`
-  margin-top: 40px;
+  margin-top: 24px;
 
   font-size: ${RFValue(30)}px;
   font-family: ${({ theme }) => theme.fonts.secondary_600};
@@ -42,5 +35,5 @@ export const Footer = styled.View`
   width: 100%;
   align-items: center;
 
-  margin: 80px 0;
+  margin: auto 0 24px;
 `;

@@ -34,10 +34,12 @@ import {
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { PasswordInput } from "../../components/PasswordInput";
 import { Button } from "../../components/Button";
+import { useNetInfo } from "@react-native-community/netinfo";
 
 export const Profile: React.FC = () => {
   const theme = useTheme();
   const { goBack } = useNavigation();
+  const { isConnected } = useNetInfo();
   const { user, signOut, userUpdate } = useAuth();
 
   const [option, setOption] = useState<"dataEdit" | "passwordEdit">("dataEdit");
@@ -61,6 +63,20 @@ export const Profile: React.FC = () => {
       setAvatar(result.uri);
     }
   }, []);
+
+  const handleChangeOption = useCallback(
+    (newOption: "dataEdit" | "passwordEdit") => {
+      if (isConnected === false && newOption === "passwordEdit") {
+        Alert.alert(
+          "Offline",
+          "É necessário conexão com a internet para alterar a senha."
+        );
+      } else {
+        setOption(newOption);
+      }
+    },
+    []
+  );
 
   const handleUserUpdate = useCallback(async () => {
     try {
@@ -136,13 +152,13 @@ export const Profile: React.FC = () => {
             <Options>
               <Option
                 active={option === "dataEdit"}
-                onPress={() => setOption("dataEdit")}
+                onPress={() => handleChangeOption("dataEdit")}
               >
                 <OptionName active={option === "dataEdit"}>Dados</OptionName>
               </Option>
               <Option
                 active={option === "passwordEdit"}
-                onPress={() => setOption("passwordEdit")}
+                onPress={() => handleChangeOption("passwordEdit")}
               >
                 <OptionName active={option === "passwordEdit"}>
                   Trocar senha
